@@ -4,18 +4,15 @@
  *  Created on: 8 Nov 2023
  *      Author: Alex
  */
-#include <mixer.h>
-#include "NVIC.h"
+
 #include "stdint.h"
 #include "fsl_port.h"
 #include "GPIO.h"
 #include "configure.h"
-#include "wdog.h"
+
 
 
 uint16_t wdog_reset_count;
-wdog_config_t config;
-
 static WDOG_Type *wdog_base = WDOG;
 static RCM_Type *rcm_base   = RCM;
 
@@ -87,39 +84,4 @@ void configure_gpio(void)
 	GPIO_set_direction(GPIO_C, 16U, INPUT);
 
 }
-void configure_nvic(void)
-{
-	NVIC_enable_interrupt_and_priotity(PORTD_IRQ, 3);
-	NVIC_enable_interrupt_and_priotity(PORTA_IRQ, 2);
 
-
-	NVIC_global_enable_interrupts;
-}
-
-void configure_wdog(void)
-{
-
-	wdog_reset_count = 0;
-
-	if (!(RCM_GetPreviousResetSources(rcm_base) & kRCM_SourceWdog))
-	{
-		WDOG_ClearResetCount(wdog_base);
-	}
-	wdog_reset_count = WDOG_GetResetCount(wdog_base);
-	if (wdog_reset_count < 1)
-	{
-		WDOG_GetDefaultConfig(&config);
-		config.timeoutValue     = TIMEOUT_VALUE_100mS;
-		WDOG_Init(wdog_base, &config);
-		WaitWctClose(wdog_base);
-	}
-	else if (wdog_reset_count >= 1)
-	{
-		WDOG_GetDefaultConfig(&config);
-		config.timeoutValue     = TIMEOUT_VALUE_100mS;
-		WDOG_Init(wdog_base, &config);
-		WaitWctClose(wdog_base);
-		wdog_reset();
-	}
-
-}

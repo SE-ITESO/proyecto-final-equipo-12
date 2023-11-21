@@ -91,65 +91,67 @@ uint8_t memory_read_sr(void)
 
 void memory_write_enable(void)
 {
-	uint8_t command[1];
-	command[0] = 0x06; //WEN
+    uint8_t command = 0x06;
+	uint8_t rx_buffer[1U] = {0};
+    dspi_transfer_t masterXfer;
+    uint8_t masterBuffer[1];
 
-	dspi_half_duplex_transfer_t masterXfer;
+    masterBuffer[0] = command;
 
-	masterXfer.txData = command;
-	masterXfer.rxData = NULL;
-	masterXfer.rxDataSize = NULL;
-	masterXfer.txDataSize = 1U;
-	masterXfer.isPcsAssertInTransfer = true;
-	masterXfer.isTransmitFirst = true;
-	masterXfer.configFlags = kDSPI_MasterCtar1  | kDSPI_MasterPcs1 | kDSPI_MasterPcsContinuous;
+    masterXfer.txData = masterBuffer;
+    masterXfer.dataSize = sizeof(masterBuffer);
+	masterXfer.rxData = rx_buffer;
+    masterXfer.configFlags = kDSPI_MasterPcsContinuous | kDSPI_MasterCtar1 | kDSPI_MasterPcs1;
 
-	DSPI_MasterHalfDuplexTransferBlocking(SPI0, &masterXfer);
+    DSPI_MasterTransferBlocking(SPI0, &masterXfer);
 }
-void memory_sector_erase(uint8_t * address)
+void memory_sector_erase(uint8_t address)
 {
-	uint8_t command[4];
-	command[0] = 0x20; //erase sector command
-	command[1] = address[0];
-	command[2] = address[1];
-	command[3] = address[2];
+    memory_write_enable();
+	uint8_t rx_buffer[1U] = {0};
+    uint8_t command = 0x20;
 
-	dspi_half_duplex_transfer_t masterXfer;
+    dspi_transfer_t masterXfer;
+    uint8_t masterBuffer[4];
 
-	masterXfer.txData = command;
-	masterXfer.rxData = NULL;
-	masterXfer.rxDataSize = NULL;
-	masterXfer.txDataSize = 1U;
-	masterXfer.isPcsAssertInTransfer = true;
-	masterXfer.isTransmitFirst = true;
-	masterXfer.configFlags = kDSPI_MasterCtar1  | kDSPI_MasterPcs1 | kDSPI_MasterPcsContinuous;
+    masterBuffer[0] = command;
+    masterBuffer[1] = (address >> 16) & 0xFF;
+    masterBuffer[2] = (address >> 8) & 0xFF;
+    masterBuffer[3] = address & 0xFF;
 
-	DSPI_MasterHalfDuplexTransferBlocking(SPI0, &masterXfer);
+
+
+    masterXfer.txData = masterBuffer;
+    masterXfer.dataSize = sizeof(masterBuffer);
+	masterXfer.rxData = rx_buffer;
+    masterXfer.configFlags = kDSPI_MasterPcsContinuous | kDSPI_MasterCtar1 | kDSPI_MasterPcs1;
+
+    DSPI_MasterTransferBlocking(SPI0, &masterXfer);
 }
-void memory_write_array(uint8_t * address, uint8_t * data)
+void memory_write_array(uint32_t address, uint8_t *data, uint32_t dataSize)
 {
-	uint8_t command[10U];
-	command[0] = 0x02; //escritura
-	command[1] = address[0];
-	command[2] = address[1];
-	command[3] = address[2];
-	command[4] = data[0];
-	command[5] = data[1];
-	command[6] = data[2];
-	command[7] = data[3];
-	command[8] = data[4];
-	command[9] = data[5];
+    memory_write_enable();
+	uint8_t rx_buffer[1U] = {0};
+    uint8_t command = 0x02;
 
-	dspi_half_duplex_transfer_t masterXfer;
+    dspi_transfer_t masterXfer;
+    uint8_t masterBuffer[4 + dataSize];
 
-	masterXfer.txData = command;
-	masterXfer.rxData = NULL;
-	masterXfer.rxDataSize = 0;
-	masterXfer.txDataSize = 10U;
-	masterXfer.isPcsAssertInTransfer = true;
-	masterXfer.isTransmitFirst = true;
-	masterXfer.configFlags = kDSPI_MasterCtar1  | kDSPI_MasterPcs1 | kDSPI_MasterPcsContinuous;
+    masterBuffer[0] = command;
+    masterBuffer[1] = (address >> 16) & 0xFF;
+    masterBuffer[2] = (address >> 8) & 0xFF;
+    masterBuffer[3] = address & 0xFF;
 
-	DSPI_MasterHalfDuplexTransferBlocking(SPI0, &masterXfer);
+    // Copy data to buffer
+    for (uint32_t i = 0; i < dataSize; ++i) {
+        masterBuffer[4 + i] = data[i];
+    }
+
+    masterXfer.txData = masterBuffer;
+    masterXfer.dataSize = sizeof(masterBuffer);
+	masterXfer.rxData = rx_buffer;
+    masterXfer.configFlags = kDSPI_MasterPcsContinuous | kDSPI_MasterCtar1 | kDSPI_MasterPcs1;
+
+    DSPI_MasterTransferBlocking(SPI0, &masterXfer);
 
 }

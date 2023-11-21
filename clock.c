@@ -10,7 +10,7 @@
 #include "MK64F12.h"
 #include "fsl_clock.h"
 #include "clock.h"
-#include "FlexTimer.h"
+
 
 void config_clock(void) {
 	mcg_pll_config_t pll0Config =

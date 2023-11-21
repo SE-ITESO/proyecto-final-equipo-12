@@ -8,7 +8,6 @@
 #ifndef CONFIGURE_H_
 #define CONFIGURE_H_
 
-#include "NVIC.h"
 #include "stdint.h"
 #include "fsl_port.h"
 #include "GPIO.h"
