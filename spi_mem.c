@@ -128,6 +128,26 @@ void memory_sector_erase(uint8_t address)
 
     DSPI_MasterTransferBlocking(SPI0, &masterXfer);
 }
+
+void memory_chip_erase(void)
+{
+    memory_write_enable();
+	uint8_t rx_buffer[1U] = {0};
+    uint8_t command = 0xC7;//0x60
+
+    dspi_transfer_t masterXfer;
+    uint8_t masterBuffer[1];
+
+    masterBuffer[0] = command;
+
+    masterXfer.txData = masterBuffer;
+    masterXfer.dataSize = sizeof(masterBuffer);
+	masterXfer.rxData = rx_buffer;
+    masterXfer.configFlags = kDSPI_MasterPcsContinuous | kDSPI_MasterCtar1 | kDSPI_MasterPcs1;
+
+    DSPI_MasterTransferBlocking(SPI0, &masterXfer);
+}
+
 void memory_write_array(uint32_t address, uint8_t *data, uint32_t dataSize)
 {
     memory_write_enable();
@@ -146,6 +166,35 @@ void memory_write_array(uint32_t address, uint8_t *data, uint32_t dataSize)
     for (uint32_t i = 0; i < dataSize; ++i) {
         masterBuffer[4 + i] = data[i];
     }
+
+    masterXfer.txData = masterBuffer;
+    masterXfer.dataSize = sizeof(masterBuffer);
+	masterXfer.rxData = rx_buffer;
+    masterXfer.configFlags = kDSPI_MasterPcsContinuous | kDSPI_MasterCtar1 | kDSPI_MasterPcs1;
+
+    DSPI_MasterTransferBlocking(SPI0, &masterXfer);
+
+}
+
+void memory_write_two_bytes(uint32_t address, uint16_t data)
+{
+    memory_write_enable();
+	uint8_t rx_buffer[1U] = {0};
+    uint8_t command = 0x02;
+
+    dspi_transfer_t masterXfer;
+    uint8_t masterBuffer[6];
+
+    masterBuffer[0] = command;
+    masterBuffer[1] = (address >> 16) & 0xFF;
+    masterBuffer[2] = (address >> 8) & 0xFF;
+    masterBuffer[3] = address & 0xFF;
+
+    // Copy data to buffer
+
+    masterBuffer[4] = (data >> 8) & 0xFF;
+    masterBuffer[5] = data & 0xFF;;
+
 
     masterXfer.txData = masterBuffer;
     masterXfer.dataSize = sizeof(masterBuffer);

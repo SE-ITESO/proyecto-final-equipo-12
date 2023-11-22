@@ -23,6 +23,8 @@ void memory_write_enable(void);
 void memory_write_array(uint32_t address, uint8_t *data, uint32_t dataSize);
 uint8_t memory_read_sr(void);
 void memory_sector_erase(uint8_t address);
+void memory_chip_erase(void);
+void memory_write_two_bytes(uint32_t address, uint16_t data);
 
 
 #endif /* SPI_MEM_H_ */
