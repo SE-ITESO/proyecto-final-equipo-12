@@ -2,10 +2,10 @@
  * PIT.c
  *
  *  Created on: 15 Sept 2023
- *      Author: admin
+ *      Author: Alejandro De La Rosa & Daniel Gutierrez
  */
 
-//includes del ejemplo del PITer parker
+
 #include "fsl_debug_console.h"
 #include "pin_mux.h"
 #include "clock_config.h"
@@ -13,14 +13,14 @@
 #include "fsl_pit.h"
 #include "PIT.h"
 #include "NVIC.h"
-//#include "fsl_common_arm.h"
+
 
 static void (*PIT0_callback)(uint32_t flags) = 0;
 static void (*PIT1_callback)(uint32_t flags_1) = 0;
 static void (*PIT2_callback)(uint32_t flags_2) = 0;
 static void (*PIT3_callback)(uint32_t flags_3) = 0;
 
-// Manejador de interrupciones del canal 1 del PIT
+/* PIT Channel 0 interrupt handler */
 void PIT_HANDLER(void)
 {
 	uint32_t irq_status = 0;
@@ -40,7 +40,7 @@ void PIT_HANDLER(void)
     __DSB();
 }
 
-// Manejador de interrupciones del canal 2 del PIT
+/* PIT Channel 1 interrupt handler */
 void PIT_HANDLER_ONE(void)
 {
 	uint32_t irq_status_1 = 0;
@@ -60,7 +60,7 @@ void PIT_HANDLER_ONE(void)
     __DSB();
 }
 
-// Manejador de interrupciones del canal 3 del PIT
+/* PIT Channel 2 interrupt handler */
 void PIT_HANDLER_TWO(void)
 {
 	uint32_t irq_status_2 = 0;
@@ -80,7 +80,7 @@ void PIT_HANDLER_TWO(void)
     __DSB();
 }
 
-// Manejador de interrupciones del canal 4 del PIT
+/* PIT Channel 3 interrupt handler */
 void PIT_HANDLER_THREE(void)
 {
 	uint32_t irq_status_3 = 0;
@@ -101,7 +101,7 @@ void PIT_HANDLER_THREE(void)
 }
 
 
-// Configuracion del PIT
+/* PIT Configuration, initialization and enable settings */
 void PIT_configure(void){
 
 	pit_config_t pitConfig;
@@ -109,22 +109,22 @@ void PIT_configure(void){
 
     PIT_GetDefaultConfig(&pitConfig);
 
-    // Se habilita el modulo del PIT
+    /* PIT module enable */
     PIT_Init(PIT_BASEADDR, &pitConfig);
 
-    // Se establece el periodo para el primer PIT
+    /* First PIT period setting */
     PIT_SetTimerPeriod(PIT_BASEADDR,PIT_CHANNEL, USEC_TO_COUNT(62U, PIT_SOURCE_CLOCK));
 
 
 
-//config del segundo PIT para el retardo de sonidos
+    /* Second PIT configuration for sound delay */
     PIT_SetTimerPeriod(PIT_BASEADDR,PIT_CHANNEL_ONE, USEC_TO_COUNT(250000U, PIT_SOURCE_CLOCK));
 
     PIT_EnableInterrupts(PIT_BASEADDR, PIT_CHANNEL_ONE, kPIT_TimerInterruptEnable);
 
     EnableIRQ(PIT_IRQ_ID_ONE);
 
-//config del tercer PIT para el watchdog
+    /* Third PIT configuration for WDOG Refresh */
     PIT_SetTimerPeriod(PIT_BASEADDR,PIT_CHANNEL_TWO, USEC_TO_COUNT(90000U, PIT_SOURCE_CLOCK));
 
     PIT_EnableInterrupts(PIT_BASEADDR, PIT_CHANNEL_TWO, kPIT_TimerInterruptEnable);
@@ -132,19 +132,10 @@ void PIT_configure(void){
     EnableIRQ(PIT_IRQ_ID_TWO);
 
 
-    //config del tercer PIT para el watchdog
-    PIT_SetTimerPeriod(PIT_BASEADDR,PIT_CHANNEL_THREE, USEC_TO_COUNT(82U, PIT_SOURCE_CLOCK));
-
-    PIT_EnableInterrupts(PIT_BASEADDR, PIT_CHANNEL_THREE, kPIT_TimerInterruptEnable);
-
-    EnableIRQ(PIT_IRQ_ID_THREE);
-
-
-
 
 }
 
-
+/* PIT callback initialization function, contain all PIT used channels*/
 void PIT_callback_init(pit_chnl_t channel, void (*handler)(uint32_t flags))
 {
 	if(PIT_CHANNEL == channel)

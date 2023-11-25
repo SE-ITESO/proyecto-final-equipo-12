@@ -1,9 +1,11 @@
 /*
- * dma.h
+ * DMA.c
  *
- *  Created on: 3 Nov 2023
- *      Author: admin
+ *  Created on: 10 Sept 2023
+ *      Author: JLPE
+ *      Modified By: Daniel Gutierrez & Alejandro De La Rosa
  */
+
 
 #ifndef DMA_H_
 #define DMA_H_
@@ -28,6 +30,6 @@
 
 /**
  * \brief
- * This function initiates the dma to make a transference values */
+ * This function initializes dma in order to make transference values */
 void configure_dma(uint8_t * src_buffer, uint16_t length);
 #endif /* DMA_H_ */
