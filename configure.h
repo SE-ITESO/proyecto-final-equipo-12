@@ -2,7 +2,7 @@
  * configure.h
  *
  *  Created on: 8 Nov 2023
- *      Author: Alex
+ *      Author: Alejandro De La Rosa A.
  */
 
 #ifndef CONFIGURE_H_
@@ -16,6 +16,7 @@
 #define INPUT 0U
 #define OUTPUT 1U
 
+/* Prototypes */
 void configure_port(void);
 void configure_gpio(void);
 void configure_nvic(void);

@@ -2,7 +2,7 @@
  * state_machines.c
  *
  *  Created on: 3 Nov 2023
- *      Author: DanGoose y EL ALex
+ *      Author: Daniel Gutierrez & Alejandro De La Rosa A.
  */
 
 #ifndef STATE_MACHINES_C_
@@ -11,14 +11,15 @@
 
 #include "stdint.h"
 
-
+/* enumerated type that contains
+ * as members each of the states to use */
 typedef enum {
 	WELCOME,
 	MAIN_MENU,
-	MANUAL_MODE,
-	SEQUENCE_MODE,
-	PLAY_SEQUENCE,
-	STOP_SEQUENCE,
+	SELECT_MODE,
+	CLEAN_MODE,
+	RYTHM_MODE,
+
 }State_name_t;
 
 /**
@@ -40,8 +41,5 @@ void refresh_wdog(uint32_t flags);
  * \brief
  * This function lets the program know a WDOG reset happened */
 void wdog_reset(void);
-
-
-
 
 #endif /* STATE_MACHINES_C_ */

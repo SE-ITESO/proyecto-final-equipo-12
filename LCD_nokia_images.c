@@ -1,8 +1,21 @@
-
+/*
+ * LCD_nokia_images.c
+ *
+ *  Created on: 3/10/2023
+ *      Author: DanielG
+ *      Modified by DanielG & Alejandro De La Rosa A.
+ */
 
 #include "LCD_nokia_images.h"
 #include "LCD_nokia.h"
 
+
+/**
+ * \brief
+ * This arrays contain the hexadecimal values
+ * that model and print various images at the LCD screen
+ * some are unused, however, depending in which array
+ * we call later, is the one that should be printed*/
 const uint8_t ROLLING[504] = {
 		0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
 			0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
@@ -272,13 +285,20 @@ const uint8_t GOOSE[504] = {
 		};
 
 
-
+/**
+ * \brief
+ * This function prints the respective bitmap
+ * (passed as arg) on the LCD screen */
 void welcome_sequence(void)
 {
 	LCD_nokia_clear();
 	LCD_nokia_bitmap(GOOSE);
 }
 
+/**
+ * \brief
+ * This function is called when the WDOG responds
+ * to a reboot */
 void wdog_sequence(void)
 {
 	LCD_nokia_clear();

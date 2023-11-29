@@ -1,3 +1,11 @@
+/*
+ * DMA.c
+ *
+ *  Created on: 10 Sept 2023
+ *      Author: JLPE
+ *      Modified By: Daniel Gutierrez & Alejandro De La Rosa
+ */
+
 #include <stdio.h>
 #include "bits.h"
 #include "fsl_port.h"
@@ -12,16 +20,19 @@
 #include "MK64F12.h"
 
 
-
+/* This variable is set to true when a DMA transfer is completed */
 volatile bool g_Transfer_Done = false;
 
 
-
+/* Macro used to align memory into tranfer */
 AT_QUICKACCESS_SECTION_DATA_ALIGN(edma_tcd_t tcdMemoryPoolPtr[TCD_QUEUE_SIZE + 1], sizeof(edma_tcd_t));
 
 static edma_handle_t g_EDMA_Handle;
 
-
+/**
+ * \brief
+ * This function is executed when a DMA tranfer is completed.
+ * It stops the PIT timer and sets "g_tranfer_Done" to true. */
 void EDMA_Callback(edma_handle_t *handle, void *param, bool transferDone, uint32_t tcds)
 {
     if (transferDone)
@@ -32,7 +43,13 @@ void EDMA_Callback(edma_handle_t *handle, void *param, bool transferDone, uint32
 }
 
 
-
+/**
+ * \brief
+ * This function takes as arguemntes the source bufer,
+ * and the transfer length, it initializes DAC using the respective function,
+ * enables DMAMUX, and its controller.
+ * Also, it configures & prepares the transfer,
+ * descriptor, request and interrupts */
 void configure_dma(uint8_t * src_buffer, uint16_t length) {
 
 		edma_transfer_config_t transferConfig;
@@ -59,13 +76,13 @@ void configure_dma(uint8_t * src_buffer, uint16_t length) {
 				   2, /* source offset */
 				   (void*)DAC0_BASE,
 				   2,
-				   0,               /* dest offset */
+				   0, /* dest offset */
 				   2,
 				   length);
 	   EDMA_TcdSetMajorOffsetConfig(
-			    		   tcdMemoryPoolPtr, //param tcd A point to the TCD structure.
-			    		   0, //* param sourceOffset source address offset.
-						   0);//destOffset destination address offset.
+			    		   tcdMemoryPoolPtr,  	/* param tcd A point to the TCD structure. */
+			    		   0, 					/* param sourceOffset source address offset. */
+						   0);					/* destOffset destination address offset. */
 
 	   EDMA_TcdSetTransferConfig(tcdMemoryPoolPtr, &transferConfig, NULL);
 

@@ -3,6 +3,7 @@
  *
  *  Created on: 19 jun. 2021
  *      Author: jlpe
+ *      Modified by: DanielG & Alejandro De La Rosa A.
  */
 
 #ifndef SPI_H_

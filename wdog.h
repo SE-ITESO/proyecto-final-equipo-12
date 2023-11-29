@@ -2,7 +2,7 @@
  * wdog.h
  *
  *  Created on: 28 Sept 2023
- *      Author: admin
+ *      Author: DanielG
  */
 
 #ifndef WDOG_H_
@@ -20,6 +20,8 @@
 
 #define WDOG_WCT_INSTRUCITON_COUNT (256U)
 
+
+/* Prototypes */
 void WaitWctClose(WDOG_Type *base);
 inline uint32_t GetTimerOutputValue(WDOG_Type *base)
 {
