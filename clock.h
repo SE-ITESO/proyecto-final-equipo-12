@@ -2,8 +2,8 @@
  * clock.h
  *
  *  Created on: 3 Nov 2023
- *      Author: admin
- */
+ *      Author: Daniel Gutierrez
+ *      */
 
 #ifndef CLOCK_H_
 #define CLOCK_H_

@@ -1,4 +1,10 @@
-
+/*
+ * LCD_nokia_images.c
+ *
+ *  Created on: 3/10/2023
+ *      Author: JLPE
+ *      Modified by DanielG & Alejandro De La Rosa A.
+ */
 
 #ifndef LCD_NOKIA_H_
 #define LCD_NOKIA_H_
@@ -15,6 +21,7 @@
 #define DATA_OR_CMD_PIN 5
 #define RESET_PIN 7
 #define CE 6
+
 /*It configures the LCD*/
 void LCD_nokia_init(void);
 /*It writes a byte in the LCD memory. The place of writting is the last place that was indicated by LCDNokia_gotoXY. In the reset state

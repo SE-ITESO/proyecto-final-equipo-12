@@ -2,7 +2,7 @@
  * DAC.c
  *
  *  Created on: 15 Sept 2023
- *      Author: admin
+ *      Author: Daniel Gutierrez & Alejandro De La Rosa
  */
 
 
@@ -11,6 +11,10 @@
 #include "DAC.h"
 
 
+/**
+ * \brief
+ * This function configures the DAC operation
+ * */
 
 void DAC_configure(void)
 {
