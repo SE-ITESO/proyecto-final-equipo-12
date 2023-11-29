@@ -1,4 +1,10 @@
-
+/*
+ * LCD_nokia_images.c
+ *
+ *  Created on: 3/10/2023
+ *      Author: JLPE
+ *      Modified by DanielG & Alejandro De La Rosa A.
+ */
 
 #include "fsl_gpio.h"
 #include "fsl_port.h"
@@ -9,7 +15,7 @@
 #include "GPIO.h"
 
 
-
+/* Bi-dimensional matrix that represents ASCII Chars to be printed in the LCD*/
 static const uint8_t ASCII[][5] =
 {
  {0x00, 0x00, 0x00, 0x00, 0x00} // 20
@@ -110,11 +116,13 @@ static const uint8_t ASCII[][5] =
 ,{0x78, 0x46, 0x41, 0x46, 0x78} // 7f
 };
 
-
+/**
+ * \brief
+ * This function initializes LCD screen configuration */
 void LCD_nokia_init(void)
 {
 
-
+/* CLOCKS and pins to be used and connected into screen */
 	CLOCK_EnableClock(kCLOCK_PortC);
 	PORT_SetPinMux(PORTC, RESET_PIN , kPORT_MuxAsGpio);
 
@@ -130,7 +138,7 @@ void LCD_nokia_init(void)
 	GPIO_set_output(GPIO_C, RESET_PIN, 1U);
 
 
-
+/* Initial settings and calibration */
 	LCD_nokia_write_byte(LCD_CMD, 0x21); //Tell LCD that extended commands follow
 	LCD_nokia_write_byte(LCD_CMD, 0xB1); //Set LCD Vop (Contrast): Try 0xB1(good @ 3.3V) or 0xBF if your display is too dark
 	LCD_nokia_write_byte(LCD_CMD, 0x07); //Set Temp coefficent
@@ -140,7 +148,10 @@ void LCD_nokia_init(void)
 	LCD_nokia_write_byte(LCD_CMD, 0x0C); //Set display control, normal mode. 0x0D for inverse
 
 }
-
+/**
+ * \brief
+ * This function allows you to traverse
+ * the array that models the bitmap */
 void LCD_nokia_bitmap(const uint8_t bitmap[]){
 
    static uint16_t i;
@@ -153,7 +164,10 @@ void LCD_nokia_bitmap(const uint8_t bitmap[]){
 }
 
 
-
+/**
+ * \brief
+ * This function allows you to write a byte in the screen
+ * using the SPI transfer protocol */
 void LCD_nokia_write_byte(uint8_t data_or_command, uint8_t data)
 {
 	GPIO_clear_pin(GPIO_D, 0);
@@ -174,6 +188,10 @@ void LCD_nokia_write_byte(uint8_t data_or_command, uint8_t data)
 
 }
 
+/**
+ * \brief
+ * This function allows you to send a character
+ * to the LCD Screen */
 void LCD_nokia_send_char(uint8_t character) {
   uint16_t index = 0;
 
@@ -186,11 +204,22 @@ void LCD_nokia_send_char(uint8_t character) {
   LCD_nokia_write_byte(LCD_DATA, 0x00); //Blank vertical line padding
 }
 
+
+/**
+ * \brief
+ * This function allows you to send
+ * a whole string (calls send char) */
 void LCD_nokia_send_string(uint8_t characters []) {
   while (*characters)
 	  LCD_nokia_send_char(*characters++);
 }
 
+
+/**
+ * \brief
+ * This function clear the screen,
+ * erasing all chars and strings
+ * before or after each write byte operation */
 void LCD_nokia_clear(void) {
 	uint16_t index = 0;
   for (index = 0 ; index < (LCD_X * LCD_Y / 8) ; index++)
@@ -198,11 +227,19 @@ void LCD_nokia_clear(void) {
   LCD_nokia_goto_xy(0, 0); //After we clear the display, return to the home position
 }
 
+/**
+ * \brief
+ * This function allows you to position the cursor
+ * where you want to start writing. */
 void LCD_nokia_goto_xy(uint8_t x, uint8_t y) {
 	LCD_nokia_write_byte(LCD_CMD, 0x80 | x);  // Column.
-	LCD_nokia_write_byte(LCD_CMD, 0x40 | y);  // Row.  ?
+	LCD_nokia_write_byte(LCD_CMD, 0x40 | y);  // Row.
 }
 
+/**
+ * \brief
+ * This function is used to generate delays
+ * between on-screen animations */
 void LCD_nokia_delay(void)
 {
 	int counter;

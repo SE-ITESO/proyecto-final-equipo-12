@@ -1,4 +1,13 @@
+/**
+	\file
+	\brief
+		This is the header file for the NVIC device driver for Kinetis K64.
+		It contains some configuration prototypes and enum types to be used by the source file.
+		It is implemented using  CMSIS Core functions
+	\author J. Luis Pizano Escalante, luispizano@iteso.mx
+	\date	27/07/2015
 
+ */
 #ifndef NVIC_H_
 #define NVIC_H_
 

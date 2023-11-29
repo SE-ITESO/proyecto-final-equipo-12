@@ -2,7 +2,7 @@
  * spi_mem.c
  *
  *  Created on: 28 Oct 2023
- *      Author: admin
+ *      Author: DanielG & Alejandro De La Rosa A.
  */
 #include "fsl_gpio.h"
 #include "fsl_port.h"
@@ -12,49 +12,70 @@
 #include "fsl_dspi.h"
 #include "GPIO.h"
 
+/**
+ * \brief
+ * This function performs the necessary configuration
+ * for SPI communication with a memory device. */
 void config_memory(void)
 {
+	/* Master DSPI Configuration structure*/
 	dspi_master_config_t masterConfig;
 	uint32_t srcClock_Hz;
+
+	/* Clock gating setting for DSPI0 */
 	CLOCK_EnableClock(kCLOCK_Spi0);
 	CLOCK_EnableClock(kCLOCK_PortC);
 
 	PORT_SetPinMux(PORTC,PIN3_IDX,kPORT_MuxAlt2);
 
-	 /* Master config */
+	 /* Master configuration */
 	masterConfig.whichCtar                                = kDSPI_Ctar1;
 	masterConfig.ctarConfig.baudRate                      = TRANSFER_BAUDRATE;
-	masterConfig.ctarConfig.bitsPerFrame                  = 8; //Cantidad o tamaño de frame de transferencia
-	masterConfig.ctarConfig.cpol                          = kDSPI_ClockPolarityActiveLow; //CPOL == 1
-	masterConfig.ctarConfig.cpha                          = kDSPI_ClockPhaseSecondEdge;//CPHA == 1
+	masterConfig.ctarConfig.bitsPerFrame                  = 8;                            /*Quantity of size of frame to transfer*/
+	masterConfig.ctarConfig.cpol                          = kDSPI_ClockPolarityActiveLow; /*CPOL == 1*/
+	masterConfig.ctarConfig.cpha                          = kDSPI_ClockPhaseSecondEdge;   /*CPHA == 1*/
 	masterConfig.ctarConfig.direction                     = kDSPI_MsbFirst;
 
-	//----------------------------------------Parametros a configurar------------------------------------//
+	/*---------------------------------------- Parameters to set ------------------------------------*/
 	masterConfig.ctarConfig.pcsToSckDelayInNanoSec        = 0;
 	masterConfig.ctarConfig.lastSckToPcsDelayInNanoSec    = 0;
 	masterConfig.ctarConfig.betweenTransferDelayInNanoSec = 0;
 
-	masterConfig.whichPcs           = kDSPI_Pcs1;	//Cual chip enable se selecciona, que esclavo tiene esta configuración
-	masterConfig.pcsActiveHighOrLow = kDSPI_PcsActiveLow; //Chip enable activo en bajo o alto
+	masterConfig.whichPcs           = kDSPI_Pcs1;		  /* Which chip enable is being selected, and what slave has this setting*/
+	masterConfig.pcsActiveHighOrLow = kDSPI_PcsActiveLow; /* Chip enable active in low or high */
 
 	masterConfig.enableContinuousSCK        = false;
 	masterConfig.enableRxFifoOverWrite      = false;
 	masterConfig.enableModifiedTimingFormat = false;
-	masterConfig.samplePoint                = kDSPI_SckToSin0Clock;	 //configura el momento donde se toma el punto de muestreo
+	masterConfig.samplePoint                = kDSPI_SckToSin0Clock;	 /* Set the moment where it takes the sample point */
 
 	srcClock_Hz = CLOCK_GetFreq(DSPI0_CLK_SRC);
 	DSPI_MasterInit(SPI0, &masterConfig, srcClock_Hz);
 }
+/**
+ * \brief
+ * This function performs a read operation of a byte
+ * from a specific SPI memory */
 uint8_t memory_read_byte(uint8_t * address)
 {
+	/* 4 Byte Read command */
 	uint8_t command[4U];
 	uint8_t rx_buffer[1U] = {0};
-	command[0] = 0x03; //lectura
+
+	/* First byte is the read Op-code*/
+	command[0] = 0x03;
+
+	/* Following bytes are the specified memory direction
+	 * by "address" pointer */
 	command[1] = address[0];
 	command[2] = address[1];
 	command[3] = address[2];
+
+	/* Half duplex transfer*/
 	dspi_half_duplex_transfer_t masterXfer;
 
+	/* Reception & transmission data size,
+	 * and other characteristics*/
 	masterXfer.txData = command;
 	masterXfer.rxData = rx_buffer;
 	masterXfer.rxDataSize = 1;
@@ -63,93 +84,10 @@ uint8_t memory_read_byte(uint8_t * address)
 	masterXfer.isTransmitFirst = true;
 	masterXfer.configFlags = kDSPI_MasterCtar1  | kDSPI_MasterPcs1 | kDSPI_MasterPcsContinuous;
 
+	/* Start blocking DSPI Transfer */
 	DSPI_MasterHalfDuplexTransferBlocking(SPI0, &masterXfer);
 
+	/* Result return located in reception buffer,
+	 * the first read byte is returned. */
 	return rx_buffer[0];
-}
-
-uint8_t memory_read_sr(void)
-{
-	uint8_t command[1];
-	uint8_t rx_buffer[2] = {0};
-	command[0] = 0x05; //leer sr1
-
-	dspi_half_duplex_transfer_t masterXfer;
-
-	masterXfer.txData = command;
-	masterXfer.rxData = rx_buffer;
-	masterXfer.rxDataSize = 1;
-	masterXfer.txDataSize = 4U;
-	masterXfer.isPcsAssertInTransfer = true;
-	masterXfer.isTransmitFirst = true;
-	masterXfer.configFlags = kDSPI_MasterCtar1  | kDSPI_MasterPcs1 | kDSPI_MasterPcsContinuous;
-
-	DSPI_MasterHalfDuplexTransferBlocking(SPI0, &masterXfer);
-
-	return rx_buffer[0];
-}
-
-void memory_write_enable(void)
-{
-	uint8_t command[1];
-	command[0] = 0x06; //WEN
-
-	dspi_half_duplex_transfer_t masterXfer;
-
-	masterXfer.txData = command;
-	masterXfer.rxData = NULL;
-	masterXfer.rxDataSize = NULL;
-	masterXfer.txDataSize = 1U;
-	masterXfer.isPcsAssertInTransfer = true;
-	masterXfer.isTransmitFirst = true;
-	masterXfer.configFlags = kDSPI_MasterCtar1  | kDSPI_MasterPcs1 | kDSPI_MasterPcsContinuous;
-
-	DSPI_MasterHalfDuplexTransferBlocking(SPI0, &masterXfer);
-}
-void memory_sector_erase(uint8_t * address)
-{
-	uint8_t command[4];
-	command[0] = 0x20; //erase sector command
-	command[1] = address[0];
-	command[2] = address[1];
-	command[3] = address[2];
-
-	dspi_half_duplex_transfer_t masterXfer;
-
-	masterXfer.txData = command;
-	masterXfer.rxData = NULL;
-	masterXfer.rxDataSize = NULL;
-	masterXfer.txDataSize = 1U;
-	masterXfer.isPcsAssertInTransfer = true;
-	masterXfer.isTransmitFirst = true;
-	masterXfer.configFlags = kDSPI_MasterCtar1  | kDSPI_MasterPcs1 | kDSPI_MasterPcsContinuous;
-
-	DSPI_MasterHalfDuplexTransferBlocking(SPI0, &masterXfer);
-}
-void memory_write_array(uint8_t * address, uint8_t * data)
-{
-	uint8_t command[10U];
-	command[0] = 0x02; //escritura
-	command[1] = address[0];
-	command[2] = address[1];
-	command[3] = address[2];
-	command[4] = data[0];
-	command[5] = data[1];
-	command[6] = data[2];
-	command[7] = data[3];
-	command[8] = data[4];
-	command[9] = data[5];
-
-	dspi_half_duplex_transfer_t masterXfer;
-
-	masterXfer.txData = command;
-	masterXfer.rxData = NULL;
-	masterXfer.rxDataSize = 0;
-	masterXfer.txDataSize = 10U;
-	masterXfer.isPcsAssertInTransfer = true;
-	masterXfer.isTransmitFirst = true;
-	masterXfer.configFlags = kDSPI_MasterCtar1  | kDSPI_MasterPcs1 | kDSPI_MasterPcsContinuous;
-
-	DSPI_MasterHalfDuplexTransferBlocking(SPI0, &masterXfer);
-
 }

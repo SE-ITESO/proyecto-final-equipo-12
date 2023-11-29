@@ -7,7 +7,7 @@
 #include "effects.h"
 
 
-static float REVERB[180] = {0};
+static float REVERB[18000] = {0};
 
 
 
