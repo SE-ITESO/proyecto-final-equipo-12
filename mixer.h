@@ -23,6 +23,13 @@ typedef enum {
 
 }State_name_t;
 
+typedef enum {
+	NONE_LOADED,
+	PIANO_LOADED,
+	GUITAR_LOADED,
+	BASS_LOADED,
+}loaded_t;
+
 /**
  * \brief
  * This function controls the state of the mixer */

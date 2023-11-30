@@ -13,10 +13,9 @@
 #include "dma.h"
 #include "PIT.h"
 #include "LCD_nokia_images.h"
-#include "wdog.h"
 #include "PIT.h"
 
-static uint8_t wdog = 0U;
+
 
 static uint8_t interrupt_pit_flag = 0U;
 static uint8_t welcome_passed_flag = 0U;
@@ -30,7 +29,7 @@ static uint8_t hiphop_rythm = 0U;
 static uint8_t latino_rythm = 0U;
 
 State_name_t current_state = WELCOME;
-
+loaded_t loaded_instrument = NONE_LOADED;
 
 /* Strings to be deployed and shown in the LCD Screen */
 
@@ -103,16 +102,9 @@ void state_machine_one(void)
 		{
 			PIT_StartTimer(PIT_BASEADDR, PIT_CHANNEL_ONE);
 
-			if(WDOG_RESET == wdog)
-			{
-				/* shows ERROR */
-				wdog_sequence();
-			}
-			else
-			{
-				/* shows the band image */
-				welcome_sequence();
-			}
+			/* shows the band image */
+			welcome_sequence();
+
 
 		}
 		counter = 1U;
@@ -157,8 +149,11 @@ void state_machine_one(void)
 			LCD_nokia_clear();
 			LCD_nokia_goto_xy(10,2);
 			LCD_nokia_send_string(string_loading);
-			load_piano();
-
+			if(loaded_instrument != PIANO_LOADED)
+			{
+				load_piano();
+			}
+			loaded_instrument = PIANO_LOADED;
 			current_state = SELECT_MODE;
 			counter = 0U;
 			GPIO_setf(GPIO_C, PIN_18);
@@ -171,7 +166,11 @@ void state_machine_one(void)
 			LCD_nokia_clear();
 			LCD_nokia_goto_xy(10,2);
 			LCD_nokia_send_string(string_loading);
-			load_guitar();
+			if(loaded_instrument != GUITAR_LOADED)
+			{
+				load_guitar();
+			}
+			loaded_instrument = GUITAR_LOADED;
 			current_state = SELECT_MODE;
 			counter = 0U;
 			GPIO_setf(GPIO_D, PIN_6);
@@ -184,7 +183,11 @@ void state_machine_one(void)
 			LCD_nokia_clear();
 			LCD_nokia_goto_xy(10,2);
 			LCD_nokia_send_string(string_loading);
-			load_bass();
+			if(loaded_instrument != BASS_LOADED)
+			{
+				load_bass();
+			}
+			loaded_instrument = BASS_LOADED;
 			current_state = SELECT_MODE;
 			counter = 0U;
 			GPIO_setf(GPIO_D, PIN_4);
@@ -261,7 +264,9 @@ void state_machine_one(void)
 			GPIO_setf(GPIO_B, PIN_20);
 		}
 		counter = 1U;
-
+		GPIO_setf(GPIO_C, PIN_18);
+		GPIO_setf(GPIO_D, PIN_6);
+		GPIO_setf(GPIO_D, PIN_4);
 		if(true == GPIO_getf(GPIO_B, PIN_18))
 		{
 			LCD_nokia_goto_xy(38,3);

@@ -10,14 +10,9 @@
 #include "fsl_port.h"
 #include "GPIO.h"
 #include "configure.h"
-#include "wdog.h"
 
-/* Variables */
-uint16_t wdog_reset_count;
-wdog_config_t config;
 
-static WDOG_Type *wdog_base = WDOG;
-static RCM_Type *rcm_base   = RCM;
+
 
 /* Structure to set a pin with all the below configurations */
 const port_pin_config_t button_config = {
@@ -164,30 +159,4 @@ void configure_nvic(void)
  * \brief
  * This function configures the watchdog
  * based on the previous reset source and the number of watchdog resets. */
-void configure_wdog(void)
-{
 
-	wdog_reset_count = 0;
-
-	if (!(RCM_GetPreviousResetSources(rcm_base) & kRCM_SourceWdog))
-	{
-		WDOG_ClearResetCount(wdog_base);
-	}
-	wdog_reset_count = WDOG_GetResetCount(wdog_base);
-	if (wdog_reset_count < 1)
-	{
-		WDOG_GetDefaultConfig(&config);
-		config.timeoutValue     = TIMEOUT_VALUE_100mS;
-		WDOG_Init(wdog_base, &config);
-		WaitWctClose(wdog_base);
-	}
-	else if (wdog_reset_count >= 1)
-	{
-		WDOG_GetDefaultConfig(&config);
-		config.timeoutValue     = TIMEOUT_VALUE_100mS;
-		WDOG_Init(wdog_base, &config);
-		WaitWctClose(wdog_base);
-		wdog_reset();
-	}
-
-}
