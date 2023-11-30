@@ -2,12 +2,12 @@
  * effects.c
  *
  *  Created on: 18 Nov 2023
- *      Author: admin
+ *      Author: Daniel Gutierrez & Alejandro De La Rosa A.
  */
 #include "effects.h"
 
 
-static float REVERB[180] = {0};
+static float REVERB[18000] = {0};
 
 
 

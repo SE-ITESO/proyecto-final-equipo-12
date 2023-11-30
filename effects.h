@@ -2,7 +2,7 @@
  * effects.h
  *
  *  Created on: 18 Nov 2023
- *      Author: admin
+ *      Author: Daniel Gutierrez & Alejandro De La Rosa A.
  */
 
 #ifndef EFFECTS_H_
