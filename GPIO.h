@@ -11,7 +11,7 @@
 #include <stdint.h>
 #include "MK64F12.h"
 
-// Para establecer numeros de pin y funcionalidades en GPIOs
+/* To set pin number and GPIO functionalities*/
 #define CLEAR_VALUE 0xFFFF
 #define PIN_0 0U
 #define PIN_1 1U
@@ -20,13 +20,18 @@
 #define PIN_4 4U
 #define PIN_5 5U
 #define PIN_6 6U
+#define PIN_7 7U
 #define PINOCHO 8U
 #define PIN_9 9U
 #define PIN_10 10U
 #define PIN_11 11U
+#define PIN_12 12U
 #define PIN_19 19U
 #define PIN_18 18U
+#define PIN_15 15U
 #define PIN_16 16U
+#define PIN_17 17U
+#define PIN_20 20U
 #define PIN_23 23U
 #define GPIO_STOPWATCH_MODE 1U
 #define GPIO_CLOCK_MODE 0U
@@ -35,7 +40,7 @@
 #define SET_AS_INPUT 0
 #define SET 1
 
-// Estructura para evaluar estado de switches
+/* To evaluate sw state */
 typedef struct
 {
 	uint8_t sw2;
@@ -44,7 +49,7 @@ typedef struct
 }switch_pressed_t;
 
 
-// Estructura para contener funcionalidades de los GPIOs
+/* Structure to contain GPIO functionalities */
 typedef struct
 {
 	uint32_t PDOR;
@@ -56,7 +61,7 @@ typedef struct
 
 }GPIO_t;
 
-// Estructura para utilizar banderas en distintos puertos
+/* Structure to use flags on different ports */
 typedef struct
 {
 	uint8_t PORTA_F;
@@ -67,25 +72,33 @@ typedef struct
 
 }Interrupt_Flags_t;
 
-// Estructura para establecer la bandera segun la funcionalidad
+/* Structure to set the flag according to the functionality */
 typedef struct
 {
-	uint8_t manual_mode_f;
-	uint8_t sequence_mode_f;
-	uint8_t kick;
-	uint8_t snare;
-	uint8_t bongo;
-	uint8_t hihat;
-	uint8_t guiro;
-	uint8_t rimshot;
-	uint8_t tambor;
-	uint8_t cynbal;
-	uint8_t cowbell;
+	uint8_t main_menu;
+	uint8_t piano;
+	uint8_t bass;
+	uint8_t guitar;
+	uint8_t clean_mode_f;
+	uint8_t fx_mode_f;
+	uint8_t C;
+	uint8_t C_sharp;
+	uint8_t D;
+	uint8_t D_sharp;
+	uint8_t E;
+	uint8_t F;
+	uint8_t F_sharp;
+	uint8_t G;
+	uint8_t G_sharp;
+	uint8_t A;
+	uint8_t A_sharp;
+	uint8_t B;
+	uint8_t C2;
 
 }Function_Flags_t;
 
 
-// Apuntador a la direccion base de cada GPIO
+/* Pointer to the base address of each GPIO */
 #define GPIO_A_BASE_ADDR (((volatile uint32_t *) 0x400FF000))
 #define GPIO_B_BASE_ADDR (((volatile uint32_t *) 0x400FF040))
 #define GPIO_C_BASE_ADDR (((volatile uint32_t *) 0x400FF080))
@@ -98,43 +111,37 @@ typedef struct
 #define GPIO_D ( (GPIO_t*) GPIO_D_BASE_ADDR)
 #define GPIO_E ( (GPIO_t*) GPIO_E_BASE_ADDR)
 
-// Para establecer a que manejador de interrupcion le corresponde cada switch
+/* To establish which interrupt handler each switch corresponds to */
 #define SW3_INT PORTA_IRQHandler
 #define SW2_INT PORTC_IRQHandler
 
-// Direccion del pin (0 entrada, 1 salida)
+/* Pin address (0 input, 1 output) */
 void GPIO_set_direction(GPIO_t * BASE, uint32_t pin, uint8_t out);
-// Salida del pin
+/* Pin out*/
 void GPIO_set_output(GPIO_t * BASE, uint32_t pin, uint8_t out);
-// Configurar el pin, 1, se pone en 1, 0, no cambia
+/* Configure pin, 1, is set to 1, 0, does not change */
 void GPIO_set_PSOR(GPIO_t * BASE, uint32_t pin, uint8_t out);
-// Poner en 0 el pin
+/* Clear pin with a 0 */
 void GPIO_clear_pin(GPIO_t * BASE, uint32_t pin);
-// Si el pin esta en 1, ponerlo en 0 y viceversa
+/* If the pin is at 1, set it to 0 and vice versa */
 void GPIO_PTOR(GPIO_t * BASE, uint32_t pin, uint8_t out);
-// Leer un pin de entrada especifico
+/* Read a specific input pin */
 uint8_t GPIO_PDIR(GPIO_t * BASE, uint32_t pin);
 
-//gets y sets para interrupciones
+/* gets and sets for interrupts */
 uint8_t GPIO_gets(GPIO_t * BASE);
 void GPIO_sets(GPIO_t * BASE);
 
-//gets y sets para switches
+/* gets and sets for switches */
 uint8_t GPIO_getsw(GPIO_t * BASE);
 void GPIO_setsw(GPIO_t * BASE);
 
-//interrupt handlers
-//void PORTA_IRQHandler(void);
-//void PORTB_IRQHandler(void);
-//void PORTC_IRQHandler(void);
-//void PORTD_IRQHandler(void);
-//void PORTE_IRQHandler(void);
 
-// Gets y sets para las funcionalidades
+/* Gets and sets for features */
 uint8_t GPIO_getf(GPIO_t * BASE, uint8_t pin);
 void GPIO_setf(GPIO_t * BASE, uint8_t pin);
 
-// Funcion para manejar bandera para el handler de interrupcion
+/* Function to handle flag for the interrupt handler */
 void GPIO_mode_flag_config (void);
 
 

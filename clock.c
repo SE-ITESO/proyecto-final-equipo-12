@@ -2,7 +2,7 @@
  * clock.c
  *
  *  Created on: 3 Nov 2023
- *      Author: admin
+ *      Author: Daniel Gutierrez
  */
 
 
@@ -10,14 +10,17 @@
 #include "MK64F12.h"
 #include "fsl_clock.h"
 #include "clock.h"
-#include "FlexTimer.h"
 
+/**
+ * \brief
+ * This function loads and sets the configuration
+ * in order to bypass MCG clock */
 void config_clock(void) {
 	mcg_pll_config_t pll0Config =
 	{
 			.enableMode = MCG_PLL_DISABLE, /* MCGPLLCLK disabled */
 			.prdiv = 0xeU, /* PLL Reference divider:	divided by 15 */
-			.vdiv = 0x6U, /* VCO divider: multiplied by 36 */
+			.vdiv = 0x7U, /* VCO divider: multiplied by 36 */
 	};
 	const osc_config_t osc_config = {
 			.freq = 50000000U, /* Oscillator frequency: 50000000Hz */
@@ -29,7 +32,10 @@ void config_clock(void) {
 										external reference clock in STOP mode */
 					}
 	};
-
+/**
+ * \brief
+ * This functions are used to provide a safe frequency change,
+ * then, we set the desired frequency and change it */
 	CLOCK_SetSimSafeDivs();
 	CLOCK_InitOsc0(&osc_config);
 

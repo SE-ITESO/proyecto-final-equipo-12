@@ -16,73 +16,115 @@ static switch_pressed_t switches = {0};
 static uint8_t Mode_Flag = 0U;
 
 
-
-//hanlders de interrupcion de puertos
+/**
+ * \brief
+ * This functions are made to handle interruptions
+ * at ports */
 void PORTA_IRQHandler(void)
 {
-	switches.sw3++;
 	flag.PORTA_F = true;
+
+	if (PORTA->ISFR & (1 << PIN_1))
+	{
+		function.A = true;
+		PORTA->ISFR |= (1 << PIN_1);
+	}
+	if (PORTA->ISFR & (1 << PIN_2))
+	{
+		function.B = true;
+		PORTA->ISFR |= (1 << PIN_2);
+	}
+
 	GPIO_PortClearInterruptFlags(GPIOA, CLEAR_VALUE);
 }
 
-
+/**
+ * \brief
+ * This functions are made to handle interruptions
+ * at port B, where most GPIO pins are connected to reproduce notes */
 void PORTB_IRQHandler(void)
 {
 	flag.PORTB_F = true;
 
 	if (PORTB->ISFR & (1 << PIN_19))
 	{
-		function.kick = true;
+		function.C_sharp = true;
 		PORTB->ISFR |= (1 << PIN_19);
 	}
 	if (PORTB->ISFR & (1 << PIN_18))
 	{
-		function.snare = true;
+		function.C = true;
 		PORTB->ISFR |= (1 << PIN_18);
 	}
 	if (PORTB->ISFR & (1 << PIN_23))
 	{
-		function.guiro = true;
+		function.A_sharp = true;
 		PORTB->ISFR |= (1 << PIN_23);
 	}
 	if (PORTB->ISFR & (1 << PIN_9))
 	{
-		function.tambor = true;
+		function.G_sharp = true;
 		PORTB->ISFR |= (1 << PIN_9);
+	}
+	if (PORTB->ISFR & (1 << PIN_20))
+	{
+		function.main_menu = true;
+		PORTB->ISFR |= (1 << PIN_20);
 	}
 
 	GPIO_PortClearInterruptFlags(GPIOB, CLEAR_VALUE);
 
 }
 
+/**
+ * \brief
+ * This functions are made to handle interruptions
+ * at port C, where most GPIO pins are connected to reproduce notes */
 void PORTC_IRQHandler(void)
 {
 
 	flag.PORTC_F = true;
 	if (PORTC->ISFR & (1 << PIN_1))
 	{
-		function.bongo = true;
+		function.D = true;
 		PORTC->ISFR |= (1 << PIN_1);
 	}
 	if (PORTC->ISFR & (1 << PINOCHO))
 	{
-		function.hihat = true;
+		function.D_sharp = true;
 		PORTC->ISFR |= (1 << PINOCHO);
 	}
 	if (PORTC->ISFR & (1 << PIN_9))
 	{
-		function.rimshot = true;
+		function.E = true;
 		PORTC->ISFR |= (1 << PIN_9);
 	}
 	if (PORTC->ISFR & (1 << PIN_0))
 	{
-		function.cynbal = true;
+		function.F = true;
 		PORTC->ISFR |= (1 << PIN_0);
 	}
 	if (PORTC->ISFR & (1 << PIN_16))
 	{
-		function.cowbell = true;
+		function.F_sharp = true;
 		PORTC->ISFR |= (1 << PIN_16);
+	}
+	if (PORTC->ISFR & (1 << PIN_17))
+	{
+		function.G = true;
+		PORTC->ISFR |= (1 << PIN_17);
+	}
+	if (PORTC->ISFR & (1 << PIN_2))
+	{
+		function.C2 = true;
+		PORTC->ISFR |= (1 << PIN_2);
+	}
+
+	if (PORTC->ISFR & (1 << PIN_18))
+	{
+		function.piano = true;
+		PORTC->ISFR |= (1 << PIN_18);
+
 	}
 
 
@@ -90,7 +132,11 @@ void PORTC_IRQHandler(void)
 
 	GPIO_PortClearInterruptFlags(GPIOC, CLEAR_VALUE);
 }
-
+/**
+ * \brief
+ * This functions are made to handle interruptions
+ * at port D, where most GPIO pins are connected to switch between
+ * menu modes */
 
 void PORTD_IRQHandler(void)
 {
@@ -98,13 +144,23 @@ void PORTD_IRQHandler(void)
 
 	if (PORTD->ISFR & (1 << PIN_4))
 	{
-		function.manual_mode_f = true;
+		function.bass = true;
 		PORTD->ISFR |= (1 << PIN_4);
 	}
 	if (PORTD->ISFR & (1 << PIN_5))
 	{
-		function.sequence_mode_f = true;
+		function.clean_mode_f = true;
 		PORTD->ISFR |= (1 << PIN_5);
+	}
+	if (PORTD->ISFR & (1 << PIN_6))
+	{
+		function.guitar = true;
+		PORTD->ISFR |= (1 << PIN_6);
+	}
+	if (PORTD->ISFR & (1 << PIN_7))
+	{
+		function.fx_mode_f = true;
+		PORTD->ISFR |= (1 << PIN_7);
 	}
 
 	GPIO_PortClearInterruptFlags(GPIOD, CLEAR_VALUE);
@@ -119,10 +175,11 @@ void PORTE_IRQHandler(void)
 }
 
 
-
+/* Get and set functions in order to replace callbacks */
 uint8_t GPIO_gets(GPIO_t * BASE)
 {
-	uint8_t s = 0u;//status
+	/* status flag*/
+	uint8_t s = 0u;
 	if (GPIO_A == BASE){
 		s = flag.PORTA_F;
 
@@ -168,66 +225,99 @@ void GPIO_sets(GPIO_t * BASE)
 
 }
 
-// Gets para las funciones del menu
-
+/* Here, we control each button and associate it
+ * to a functionality, in this case, a sound. */
 uint8_t GPIO_getf(GPIO_t * BASE, uint8_t pin)
 {
-	// Funcion
+
 	uint8_t f = 0u;
 	if (GPIO_A == BASE){
 
+		if (PIN_1 == pin)
+		{
+			f = function.A;
+		}
+		if (PIN_2 == pin)
+		{
+			f = function.B;
+		}
 
 	}
 	if (GPIO_B == BASE){
 		if (PIN_19 == pin)
 		{
-			f = function.kick;
+			f = function.C_sharp;
 		}
 		if (PIN_18 == pin)
 		{
-			f = function.snare;
+			f = function.C;
 		}
 		if (PIN_23 == pin)
 		{
-			f = function.guiro;
+			f = function.A_sharp;
 		}
 		if (PIN_9 == pin)
 		{
-			f = function.tambor;
+			f = function.G_sharp;
+		}
+		if (PIN_20 == pin)
+		{
+			f = function.main_menu;
 		}
 
 	}
 	if (GPIO_C == BASE){
 		if (PIN_1 == pin)
 		{
-			f = function.bongo;
+			f = function.D;
 		}
 		if (PINOCHO == pin)
 		{
-			f = function.hihat;
+			f = function.D_sharp;
 		}
 		if (PIN_9 == pin)
 		{
-			f = function.rimshot;
+			f = function.E;
 		}
 		if (PIN_0 == pin)
 		{
-			f = function.cynbal;
+			f = function.F;
 		}
 		if (PIN_16 == pin)
 		{
-			f = function.cowbell;
+			f = function.F_sharp;
+		}
+		if (PIN_17 == pin)
+		{
+			f = function.G;
+		}
+		if (PIN_2 == pin)
+		{
+			f = function.C2;
+		}
+
+		if (PIN_18 == pin)
+		{
+			f = function.piano;
 		}
 
 	}
 	if (GPIO_D == BASE){
-		if (PIN_4 == pin)
-		{
-			f = function.manual_mode_f;
-		}
 		if (PIN_5 == pin)
 		{
-			f = function.sequence_mode_f;
+			f = function.clean_mode_f;
+		}
+		if (PIN_7 == pin)
+		{
+			f = function.fx_mode_f;
+		}
+		if (PIN_4 == pin)
+		{
+			f = function.bass;
+		}
+		if (PIN_6 == pin)
+		{
+			f = function.guitar;
 		}
 	}
 	if (GPIO_E == BASE){
@@ -241,25 +331,36 @@ uint8_t GPIO_getf(GPIO_t * BASE, uint8_t pin)
 void GPIO_setf(GPIO_t * BASE, uint8_t pin)
 {
 	if (GPIO_A == BASE){
-
+		if (PIN_1 == pin)
+		{
+			function.A = false;
+		}
+		if (PIN_2 == pin)
+		{
+			function.B = false;
+		}
 
 	}
 	if (GPIO_B == BASE){
 		if (PIN_19 == pin)
 		{
-			function.kick = false;
+			function.C_sharp = false;
 		}
 		if (PIN_18 == pin)
 		{
-			function.snare = false;
+			function.C = false;
 		}
 		if (PIN_23 == pin)
 		{
-			function.guiro = false;
+			function.A_sharp = false;
 		}
 		if (PIN_9 == pin)
 		{
-			function.tambor = false;
+			function.G_sharp = false;
+		}
+		if (PIN_20 == pin)
+		{
+			function.main_menu = false;
 		}
 
 
@@ -267,33 +368,54 @@ void GPIO_setf(GPIO_t * BASE, uint8_t pin)
 	if (GPIO_C == BASE){
 		if (PIN_1 == pin)
 		{
-			function.bongo = false;
+			function.D = false;
 		}
 		if (PINOCHO == pin)
 		{
-			function.hihat = false;
+			function.D_sharp = false;
 		}
 		if (PIN_9 == pin)
 		{
-			function.rimshot = false;
+			function.E = false;
 		}
 		if (PIN_0 == pin)
 		{
-			function.cynbal = false;
+			function.F = false;
 		}
 		if (PIN_16 == pin)
 		{
-			function.cowbell = false;
+			function.F_sharp = false;
+		}
+		if (PIN_17 == pin)
+		{
+			function.G = false;
+		}
+		if (PIN_2 == pin)
+		{
+			function.C2 = false;
+		}
+
+		if (PIN_18 == pin)
+		{
+			function.piano = false;
 		}
 	}
 	if (GPIO_D == BASE){
 		if (PIN_4 == pin)
 		{
-			function.manual_mode_f = false;
+			function.bass = false;
 		}
 		if (PIN_5 == pin)
 		{
-			function.sequence_mode_f = false;
+			function.clean_mode_f = false;
+		}
+		if (PIN_6 == pin)
+		{
+			function.guitar = false;
+		}
+		if (PIN_7 == pin)
+		{
+			function.fx_mode_f = false;
 		}
 	}
 	if (GPIO_E == BASE){
@@ -305,7 +427,7 @@ void GPIO_setf(GPIO_t * BASE, uint8_t pin)
 
 
 
-// Para leer el estado de los switches
+/* To read switches status */
 
 uint8_t GPIO_getsw(GPIO_t * BASE)
 {
@@ -335,7 +457,7 @@ void GPIO_setsw(GPIO_t * BASE)
 }
 
 
-
+/* Own GPIO functions */
 void GPIO_set_direction(GPIO_t * BASE, uint32_t pin, uint8_t out)
 {
 	//BASE->PDDR = 0x00000000;
@@ -382,6 +504,7 @@ uint8_t GPIO_PDIR(GPIO_t * BASE, uint32_t pin){
 	return result;
 }
 
+/* Unused */
 void GPIO_mode_flag_config (void)
 {
 	if(GPIO_CLOCK_MODE == Mode_Flag)
