@@ -23,7 +23,7 @@
 uint8_t address_array[3];
 uint8_t interrupt_pit_drums_flag = 0U;
 
-static uint16_t KICK[2000] = { 881, 883, 881, 883, 881, 883, 881, 883, 881, 883,
+static uint16_t KICK[KICK_SIZE] = { 881, 883, 881, 883, 881, 883, 881, 883, 881, 883,
 		891, 883, 902, 883, 902, 883, 902, 883, 902, 883, 891, 891, 904, 891,
 		891, 902, 883, 891, 881, 883, 900, 902, 891, 912, 881, 902, 875, 900,
 		902, 920, 902, 883, 931, 898, 905, 871, 914, 879, 902, 890, 850, 729,
@@ -178,7 +178,7 @@ static uint16_t KICK[2000] = { 881, 883, 881, 883, 881, 883, 881, 883, 881, 883,
 		809, 807, 793, 774, 809, 760, 741, 751, 718, 719, 727, 696, 686, 708,
 		686, 659, 665, 632,
 };
-static uint16_t SNARE[1500] = { 700, 700, 707, 665, 672, 734, 963, 949, 783,
+static uint16_t SNARE[SNARE_SIZE] = { 700, 700, 707, 665, 672, 734, 963, 949, 783,
 		742, 762, 443, 381, 970, 1171, 742, 201, 291, 1018, 1157, 804, 450, 887,
 		963, 118, 173, 423, 547, 873, 1116, 651, 222, 194, 603, 1199, 998, 263,
 		173, 374, 437, 513, 534, 457, 506, 506, 478, 589, 582, 624, 555, 596,
@@ -289,7 +289,7 @@ static uint16_t SNARE[1500] = { 700, 700, 707, 665, 672, 734, 963, 949, 783,
 		568, 921, 1088, 756, 886, 838, 596, 769, 839, 914, 845, 658, 652, 887,
 		998, 984, 866,
 };
-static uint16_t HI_HAT[2000] = { 850, 884, 864, 884, 816, 916, 780, 952, 884,
+static uint16_t HI_HAT[HIHAT_SIZE] = { 850, 884, 864, 884, 816, 916, 780, 952, 884,
 		782, 1000, 729, 1021, 727, 918, 846, 782, 987, 800, 882, 876, 941, 705,
 		1079, 796, 743, 985, 683, 1149, 667, 836, 932, 966, 916, 673, 887, 850,
 		1003, 649, 956, 766, 973, 854, 862, 1155, 840, 526, 973, 828, 952, 561,
@@ -435,7 +435,7 @@ static uint16_t HI_HAT[2000] = { 850, 884, 864, 884, 816, 916, 780, 952, 884,
 		989, 866, 757, 820, 816, 967, 798, 794, 900, 971, 872, 825, 814, 1057,
 
 };
-static uint16_t STICKS[2000] = { 879, 1262, 1365, 651, 124, 41, 393, 1044, 1593,
+static uint16_t STICKS[HIHAT_SIZE] = { 879, 1262, 1365, 651, 124, 41, 393, 1044, 1593,
 		1779, 1655, 1169, 527, 83, 0, 228, 786, 1396, 1706, 1696, 1375, 776,
 		258, 51, 145, 579, 1148, 1572, 1686, 1489, 1014, 465, 145, 135, 403,
 		920, 1396, 1634, 1562, 1210, 672, 248, 176, 299, 724, 1179, 1542, 1561,
@@ -582,19 +582,19 @@ static uint16_t STICKS[2000] = { 879, 1262, 1365, 651, 124, 41, 393, 1044, 1593,
 		858, 910, 889, 869, 879, 869,
 };
 
-static uint8_t DO[12000];
-static uint8_t DO_s[12000];
-static uint8_t RE[12000];
-static uint8_t RE_S[12000];
-static uint8_t MI[12000];
-static uint8_t FA[12000];
-static uint8_t FA_S[12000];
-static uint8_t SOL[12000];
-static uint8_t SOL_S[12000];
-static uint8_t LA[12000];
-static uint8_t LA_S[12000];
-static uint8_t SI[12000];
-static uint8_t DO_2[12000];
+static uint8_t DO[NOTE_SIZE];
+static uint8_t DO_s[NOTE_SIZE];
+static uint8_t RE[NOTE_SIZE];
+static uint8_t RE_S[NOTE_SIZE];
+static uint8_t MI[NOTE_SIZE];
+static uint8_t FA[NOTE_SIZE];
+static uint8_t FA_S[NOTE_SIZE];
+static uint8_t SOL[NOTE_SIZE];
+static uint8_t SOL_S[NOTE_SIZE];
+static uint8_t LA[NOTE_SIZE];
+static uint8_t LA_S[NOTE_SIZE];
+static uint8_t SI[NOTE_SIZE];
+static uint8_t DO_2[NOTE_SIZE];
 
 
 
@@ -614,53 +614,53 @@ static uint8_t DO_2[12000];
 
 void load_guitar(void)
 {
-	read_instrument(DO, 0x045200, 12000);
-	read_instrument(DO_s, 0x04A100,12000);
-	read_instrument(RE, 0x04F000, 12000);
-	read_instrument(RE_S, 0x053F00,12000);
-	read_instrument(MI, 0x058E00, 12000);
-	read_instrument(FA, 0x05DD00,12000);
-	read_instrument(FA_S, 0x062C00,12000);
-	read_instrument(SOL, 0x067B00,12000);
-	read_instrument(SOL_S, 0x06CA00,12000);
-	read_instrument(LA, 0x071900,12000);
-	read_instrument(LA_S, 0x076800,12000);
-	read_instrument(SI, 0x07B700,12000);
-	read_instrument(DO_2, 0x080600,12000);
+	read_instrument(DO, 0x045200, NOTE_SIZE);
+	read_instrument(DO_s, 0x04A100,NOTE_SIZE);
+	read_instrument(RE, 0x04F000, NOTE_SIZE);
+	read_instrument(RE_S, 0x053F00,NOTE_SIZE);
+	read_instrument(MI, 0x058E00, NOTE_SIZE);
+	read_instrument(FA, 0x05DD00,NOTE_SIZE);
+	read_instrument(FA_S, 0x062C00,NOTE_SIZE);
+	read_instrument(SOL, 0x067B00,NOTE_SIZE);
+	read_instrument(SOL_S, 0x06CA00,NOTE_SIZE);
+	read_instrument(LA, 0x071900,NOTE_SIZE);
+	read_instrument(LA_S, 0x076800,NOTE_SIZE);
+	read_instrument(SI, 0x07B700,NOTE_SIZE);
+	read_instrument(DO_2, 0x080600,NOTE_SIZE);
 }
 
 void load_piano(void)
 {
-	read_instrument(DO, 0x000000, 12000);
-	read_instrument(DO_s, 0x004F00,12000);
-	read_instrument(RE, 0x009E00, 12000);
-	read_instrument(RE_S, 0x00ED00,12000);
-	read_instrument(MI, 0x013E00, 12000);
-	read_instrument(FA, 0x018B00,12000);
-	read_instrument(FA_S, 0x01DA00,12000);
-	read_instrument(SOL, 0x022900,12000);
-	read_instrument(SOL_S, 0x02C700,12000);
-	read_instrument(LA, 0x031600,12000);
-	read_instrument(LA_S, 0x036500,12000);
-	read_instrument(SI, 0x03B400,12000);
-	read_instrument(DO_2, 0x040300,12000);
+	read_instrument(DO, 0x000000, NOTE_SIZE);
+	read_instrument(DO_s, 0x004F00,NOTE_SIZE);
+	read_instrument(RE, 0x009E00, NOTE_SIZE);
+	read_instrument(RE_S, 0x00ED00,NOTE_SIZE);
+	read_instrument(MI, 0x013E00, NOTE_SIZE);
+	read_instrument(FA, 0x018B00,NOTE_SIZE);
+	read_instrument(FA_S, 0x01DA00, NOTE_SIZE);
+	read_instrument(SOL, 0x022900,NOTE_SIZE);
+	read_instrument(SOL_S, 0x02C700,NOTE_SIZE);
+	read_instrument(LA, 0x031600,NOTE_SIZE);
+	read_instrument(LA_S, 0x036500,NOTE_SIZE);
+	read_instrument(SI, 0x03B400,NOTE_SIZE);
+	read_instrument(DO_2, 0x040300,NOTE_SIZE);
 }
 
 void load_bass(void)
 {
-	read_instrument(DO, 0x085500, 12000);
-	read_instrument(DO_s, 0x08A400,12000);
-	read_instrument(RE, 0x08F300, 12000);
-	read_instrument(RE_S, 0x094200,12000);
-	read_instrument(MI, 0x099100, 12000);
-	read_instrument(FA, 0x09E000,12000);
-	read_instrument(FA_S, 0x0A2F00,12000);
-	read_instrument(SOL, 0x0A7E00,12000);
-	read_instrument(SOL_S, 0x0ACD00,12000);
-	read_instrument(LA, 0x0B1C00,12000);
-	read_instrument(LA_S, 0x0B6B00,12000);
-	read_instrument(SI, 0x0BBA00,12000);
-	read_instrument(DO_2, 0x0C0900,12000);
+	read_instrument(DO, 0x085500, NOTE_SIZE);
+	read_instrument(DO_s, 0x08A400,NOTE_SIZE);
+	read_instrument(RE, 0x08F300, NOTE_SIZE);
+	read_instrument(RE_S, 0x094200,NOTE_SIZE);
+	read_instrument(MI, 0x099100, NOTE_SIZE);
+	read_instrument(FA, 0x09E000,NOTE_SIZE);
+	read_instrument(FA_S, 0x0A2F00,NOTE_SIZE);
+	read_instrument(SOL, 0x0A7E00,NOTE_SIZE);
+	read_instrument(SOL_S, 0x0ACD00,NOTE_SIZE);
+	read_instrument(LA, 0x0B1C00,NOTE_SIZE);
+	read_instrument(LA_S, 0x0B6B00,NOTE_SIZE);
+	read_instrument(SI, 0x0BBA00,NOTE_SIZE);
+	read_instrument(DO_2, 0x0C0900,NOTE_SIZE);
 }
 
 
@@ -700,56 +700,56 @@ void read_instrument(uint8_t * instrument, uint32_t address, uint16_t length)
  * instrument*/
 void play_do(void)
 {
-	configure_dma(DO, 12000);
+	configure_dma(DO, NOTE_SIZE);
 }
 void play_do_s(void)
 {
-	configure_dma(DO_s, 12000);
+	configure_dma(DO_s, NOTE_SIZE);
 }
 void play_re(void)
 {
-	configure_dma(RE, 12000);
+	configure_dma(RE, NOTE_SIZE);
 }
 void play_re_s(void)
 {
-	configure_dma(RE_S, 12000);
+	configure_dma(RE_S, NOTE_SIZE);
 }
 void play_mi(void)
 {
-	configure_dma(MI, 12000);
+	configure_dma(MI, NOTE_SIZE);
 }
 void play_fa(void)
 {
-	configure_dma(FA, 12000);
+	configure_dma(FA, NOTE_SIZE);
 }
 void play_fa_s(void)
 {
-	configure_dma(FA_S, 12000);
+	configure_dma(FA_S, NOTE_SIZE);
 }
 void play_sol(void)
 {
-	configure_dma(SOL, 12000);
+	configure_dma(SOL, NOTE_SIZE);
 }
 
 void play_sol_s(void)
 {
-	configure_dma(SOL_S, 12000);
+	configure_dma(SOL_S, NOTE_SIZE);
 }
 void play_la(void)
 {
-	configure_dma(LA, 12000);
+	configure_dma(LA, NOTE_SIZE);
 }
 void play_la_s(void)
 {
-	configure_dma(LA_S, 12000);
+	configure_dma(LA_S, NOTE_SIZE);
 }
 void play_si(void)
 {
-	configure_dma(SI, 12000);
+	configure_dma(SI, NOTE_SIZE);
 }
 void play_do2(void)
 {
-	configure_dma(DO_2, 12000);
+	configure_dma(DO_2, NOTE_SIZE);
 }
 
 
@@ -759,7 +759,7 @@ void play_kick(uint32_t flags)
 {
 	static uint16_t i = 0;
 
-	if(2000 > i)
+	if(KICK_SIZE > i)
 	{
 		DAC_configure();
 		DAC_SetBufferValue(DAC0, 0U, KICK[i]);
@@ -775,7 +775,7 @@ void play_kick(uint32_t flags)
 void play_snare(uint32_t flags)
 {
 	static uint16_t i = 0;
-	if(1500 > i)
+	if(SNARE_SIZE > i)
 	{
 		DAC_configure();
 		DAC_SetBufferValue(DAC0, 0U, SNARE[i]);
@@ -792,7 +792,7 @@ void play_sticks(uint32_t flags)
 {
 	static uint16_t i = 0;
 
-	if(2000 > i)
+	if(STICKS_SIZE > i)
 	{
 		DAC_configure();
 		DAC_SetBufferValue(DAC0, 0U, STICKS[i]);
@@ -809,7 +809,7 @@ void play_hihat(uint32_t flags)
 {
 	static uint16_t i = 0;
 
-	if(2000 > i)
+	if(HIHAT_SIZE > i)
 	{
 		DAC_configure();
 		DAC_SetBufferValue(DAC0, 0U, HI_HAT[i]);
@@ -826,7 +826,7 @@ void play_silence(uint32_t flags)
 {
 	static uint16_t i = 0;
 
-	if(2000 > i)
+	if(KICK_SIZE > i)
 	{
 		DAC_configure();
 		DAC_SetBufferValue(DAC0, 0U, 0);

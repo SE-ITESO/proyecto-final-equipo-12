@@ -10,6 +10,13 @@
 
 #include "stdint.h"
 
+
+#define KICK_SIZE 2000U
+#define SNARE_SIZE 1500U
+#define HIHAT_SIZE 2000U
+#define STICKS_SIZE 2000U
+#define NOTE_SIZE 12000U
+
 /**
  * \brief
  * This function reads form the memory */

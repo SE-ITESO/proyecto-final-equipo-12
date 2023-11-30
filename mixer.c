@@ -54,16 +54,16 @@ uint8_t string_BASS[]="BAJO";
 uint8_t string_loading[]="Cargando...";
 
 uint8_t string_DO[]="DO  ";
-uint8_t string_DO_s[]="DO#";
+uint8_t string_DO_s[]="DO#  ";
 uint8_t string_RE[]="RE   ";
-uint8_t string_RE_s[]="RE#";
+uint8_t string_RE_s[]="RE#   ";
 uint8_t string_MI[]="MI   ";
 uint8_t string_FA[]="FA   ";
-uint8_t string_FA_s[]="FA#";
+uint8_t string_FA_s[]="FA#   ";
 uint8_t string_SOL[]="SOL   ";
 uint8_t string_SOL_s[]="SOL#";
 uint8_t string_LA[]="LA   ";
-uint8_t string_LA_s[]="LA#";
+uint8_t string_LA_s[]="LA#  ";
 uint8_t string_SI[]="SI   ";
 uint8_t string_DO2[]="DO 2   ";
 
